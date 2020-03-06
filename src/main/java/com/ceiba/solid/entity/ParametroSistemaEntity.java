@@ -1,4 +1,4 @@
-package com.ceiba.solid;
+package com.ceiba.solid.entity;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -6,7 +6,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
 @Entity(name = "parametro_sistema")
-public class ParametroSistema {
+public class ParametroSistemaEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

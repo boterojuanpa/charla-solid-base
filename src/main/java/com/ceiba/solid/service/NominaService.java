@@ -1,5 +1,9 @@
-package com.ceiba.solid;
+package com.ceiba.solid.service;
 
+import com.ceiba.solid.repository.PagoRepository;
+import com.ceiba.solid.repository.ParametroSistemaRepositorio;
+import com.ceiba.solid.entity.EmpleadoEntity;
+import com.ceiba.solid.entity.PagoEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

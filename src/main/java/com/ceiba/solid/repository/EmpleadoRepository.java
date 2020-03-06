@@ -1,5 +1,6 @@
-package com.ceiba.solid;
+package com.ceiba.solid.repository;
 
+import com.ceiba.solid.entity.EmpleadoEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

@@ -1,4 +1,4 @@
-package com.ceiba.solid;
+package com.ceiba.solid.entity;
 
 import javax.persistence.*;
 import java.util.Date;
