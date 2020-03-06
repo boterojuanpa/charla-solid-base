@@ -17,7 +17,7 @@ public class PagoEntity {
     private Long idEmpleado;
     private Long idProveedor;
 
-    PagoEntity(){
+    public PagoEntity(){
 
     }
 
