@@ -1,84 +1,79 @@
 package com.ceiba.solid.service;
 
-import com.ceiba.solid.repository.PagoRepository;
-import com.ceiba.solid.repository.ParametroSistemaRepositorio;
 import com.ceiba.solid.entity.EmpleadoEntity;
 import com.ceiba.solid.entity.PagoEntity;
+import com.ceiba.solid.entity.ParametroSistemaEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.EntityManager;
+import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
 @Service
 public class NominaService {
 
     @Autowired
-    private EmpleadoService empleadoService;
-
-    @Autowired
-    private ParametroSistemaRepositorio parametroSistemaRepositorio;
-
-    @Autowired
-    private PagoRepository pagoRepository;
+    private EntityManager entityManager;
 
 
+    @Transactional
     public List<PagoEntity> generarSalario() {
-        List<EmpleadoEntity> empleadosEntity = empleadoService.consultar();
+        List<EmpleadoEntity> empleadosEntity = entityManager.createQuery("SELECT e FROM EMPLEADO e", EmpleadoEntity.class).getResultList();
         List<PagoEntity> pagoEntities = new ArrayList<>();
 
-        Date date = new Date();
         Calendar c = Calendar.getInstance();
-        c.setTime(date);
+        c.set(Calendar.HOUR, 0);
+        c.set(Calendar.MINUTE, 0);
+        c.set(Calendar.SECOND, 0);
+
 
         for (EmpleadoEntity empleadoEntity : empleadosEntity) {
             if (empleadoEntity.getCargo() != null) {
                 if (empleadoEntity.getCargo().equals("OPERARIO")) {
                     PagoEntity pagoEntity = new PagoEntity();
                     pagoEntity.setIdEmpleado(empleadoEntity.getId());
-                    pagoEntity.setValor(Double.parseDouble(parametroSistemaRepositorio.findById(1l).get().getValue())
-                            + Double.parseDouble(parametroSistemaRepositorio.findById(2l).get().getValue()));
-
+                    pagoEntity.setValor(
+                            Double.parseDouble(entityManager.find(ParametroSistemaEntity.class, 1l).getValue()) +
+                                    Double.parseDouble(entityManager.find(ParametroSistemaEntity.class, 2l).getValue())
+                    );
 
                     c.add(Calendar.DATE, 5);
-                    date = c.getTime();
-                    pagoEntity.setFechaDesembolso(date);
+                    pagoEntity.setFechaDesembolso(c.getTime());
                     pagoEntities.add(pagoEntity);
 
                 }
                 if (empleadoEntity.getCargo().equals("SUPERVISOR")) {
 
                     c.add(Calendar.DATE, 3);
-                    date = c.getTime();
-
                     PagoEntity pagoEntity = new PagoEntity();
                     pagoEntity.setIdEmpleado(empleadoEntity.getId());
-                    pagoEntity.setValor(Double.parseDouble(parametroSistemaRepositorio.findById(1l).get().getValue()) * 2);
-                    pagoEntity.setFechaDesembolso(date);
+                    pagoEntity.setValor(Double.parseDouble(entityManager.find(ParametroSistemaEntity.class, 1l).getValue()) * 2);
+                    pagoEntity.setFechaDesembolso(c.getTime());
                     pagoEntities.add(pagoEntity);
                 }
                 if (empleadoEntity.getCargo().equals("GERENTE")) {
-                    date = c.getTime();
                     PagoEntity pagoEntity = new PagoEntity();
                     pagoEntity.setIdEmpleado(empleadoEntity.getId());
-                    pagoEntity.setValor(Double.parseDouble(parametroSistemaRepositorio.findById(3l).get().getValue()));
-                    pagoEntity.setFechaDesembolso(date);
+                    pagoEntity.setValor(Double.parseDouble(entityManager.find(ParametroSistemaEntity.class, 3l).getValue()));
+                    pagoEntity.setFechaDesembolso(c.getTime());
                     pagoEntities.add(pagoEntity);
                 }
             }
         }
 
-        pagoRepository.saveAll(pagoEntities);
+        pagoEntities.forEach(pago -> entityManager.persist(pago));
 
         return pagoEntities;
     }
 
+    @Transactional
     public void pagarProveedor(PagoEntity pago) {
 
-        if(pago.getIdProveedor() != null && pago.getValor() != null ){
-            pagoRepository.save(pago);
+        if (pago.getIdProveedor() != null && pago.getValor() != null) {
+            entityManager.persist(pago);
 
         }
 
