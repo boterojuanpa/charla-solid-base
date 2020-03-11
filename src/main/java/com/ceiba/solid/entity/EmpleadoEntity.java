@@ -1,5 +1,7 @@
 package com.ceiba.solid.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import javax.persistence.*;
 import java.util.Date;
 

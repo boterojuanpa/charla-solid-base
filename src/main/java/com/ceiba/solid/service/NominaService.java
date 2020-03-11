@@ -8,9 +8,9 @@ import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityManager;
 import javax.transaction.Transactional;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.*;
 
 @Service
 public class NominaService {
@@ -40,6 +40,11 @@ public class NominaService {
                                     Double.parseDouble(entityManager.find(ParametroSistemaEntity.class, 2l).getValue())
                     );
 
+                    if(getDiffYears(empleadoEntity.getFecha(), new Date()) > 3){
+                        pagoEntity.setBonificacion(pagoEntity.getValor() * 0.1d);
+                        pagoEntity.setValor(pagoEntity.getValor() + pagoEntity.getValor() * 0.1d);
+                    }
+
                     c.add(Calendar.DATE, 5);
                     pagoEntity.setFechaDesembolso(c.getTime());
                     pagoEntities.add(pagoEntity);
@@ -51,13 +56,25 @@ public class NominaService {
                     PagoEntity pagoEntity = new PagoEntity();
                     pagoEntity.setIdEmpleado(empleadoEntity.getId());
                     pagoEntity.setValor(Double.parseDouble(entityManager.find(ParametroSistemaEntity.class, 1l).getValue()) * 2);
+
+                    if(getDiffYears(empleadoEntity.getFecha(), new Date()) > 2){
+                        pagoEntity.setBonificacion(pagoEntity.getValor() * 0.1d);
+                        pagoEntity.setValor(pagoEntity.getValor() + pagoEntity.getValor() * 0.1d);
+                    }
+
                     pagoEntity.setFechaDesembolso(c.getTime());
                     pagoEntities.add(pagoEntity);
                 }
+
                 if (empleadoEntity.getCargo().equals("GERENTE")) {
                     PagoEntity pagoEntity = new PagoEntity();
                     pagoEntity.setIdEmpleado(empleadoEntity.getId());
                     pagoEntity.setValor(Double.parseDouble(entityManager.find(ParametroSistemaEntity.class, 3l).getValue()));
+                    if(getDiffYears(empleadoEntity.getFecha(), new Date()) > 5){
+                        pagoEntity.setBonificacion(pagoEntity.getValor() * 0.3d);
+                        pagoEntity.setValor(pagoEntity.getValor() + pagoEntity.getValor() * 0.3d);
+                    }
+
                     pagoEntity.setFechaDesembolso(c.getTime());
                     pagoEntities.add(pagoEntity);
                 }
@@ -72,10 +89,30 @@ public class NominaService {
     @Transactional
     public void pagarProveedor(PagoEntity pago) {
 
+        LocalDate localDate = LocalDate.now();
+        localDate = localDate.withDayOfMonth(1).withMonth(localDate.getMonthValue() + 1);
+        pago.setFechaDesembolso(Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant()));
+
         if (pago.getIdProveedor() != null && pago.getValor() != null) {
             entityManager.persist(pago);
 
         }
 
+    }
+
+    public static int getDiffYears(Date first, Date last) {
+        Calendar a = getCalendar(first);
+        Calendar b = getCalendar(last);
+        int diff = b.get(Calendar.YEAR) - a.get(Calendar.YEAR);
+        if (a.get(Calendar.DAY_OF_YEAR) > b.get(Calendar.DAY_OF_YEAR)) {
+            diff--;
+        }
+        return diff;
+    }
+
+    public static Calendar getCalendar(Date date) {
+        Calendar cal = Calendar.getInstance(Locale.US);
+        cal.setTime(date);
+        return cal;
     }
 }

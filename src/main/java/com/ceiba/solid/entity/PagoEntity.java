@@ -1,5 +1,7 @@
 package com.ceiba.solid.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -13,11 +15,13 @@ public class PagoEntity {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     private Double valor;
+    private Double bonificacion;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
     private Date fechaDesembolso;
     private Long idEmpleado;
     private Long idProveedor;
 
-    public PagoEntity(){
+    public PagoEntity() {
 
     }
 
@@ -59,5 +63,13 @@ public class PagoEntity {
 
     public Long getIdProveedor() {
         return idProveedor;
+    }
+
+    public Double getBonificacion() {
+        return bonificacion;
+    }
+
+    public void setBonificacion(Double bonificacion) {
+        this.bonificacion = bonificacion;
     }
 }
