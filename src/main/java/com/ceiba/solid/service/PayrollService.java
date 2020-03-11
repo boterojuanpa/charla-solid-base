@@ -13,14 +13,14 @@ import java.time.ZoneId;
 import java.util.*;
 
 @Service
-public class NominaService {
+public class PayrollService {
 
     @Autowired
     private EntityManager entityManager;
 
 
     @Transactional
-    public List<PagoEntity> generarSalario() {
+    public List<PagoEntity> generateSalary() {
         List<EmpleadoEntity> empleadosEntity = entityManager.createQuery("SELECT e FROM EMPLEADO e", EmpleadoEntity.class).getResultList();
         List<PagoEntity> pagoEntities = new ArrayList<>();
 
@@ -87,14 +87,14 @@ public class NominaService {
     }
 
     @Transactional
-    public void pagarProveedor(PagoEntity pago) {
+    public void payProvider(PagoEntity pay) {
 
         LocalDate localDate = LocalDate.now();
         localDate = localDate.withDayOfMonth(1).withMonth(localDate.getMonthValue() + 1);
-        pago.setFechaDesembolso(Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant()));
+        pay.setFechaDesembolso(Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant()));
 
-        if (pago.getIdProveedor() != null && pago.getValor() != null) {
-            entityManager.persist(pago);
+        if (pay.getIdProveedor() != null && pay.getValor() != null) {
+            entityManager.persist(pay);
 
         }
 
