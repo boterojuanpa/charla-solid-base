@@ -24,13 +24,12 @@ public class PayrollService {
         List<EmpleadoEntity> empleadosEntity = entityManager.createQuery("SELECT e FROM EMPLEADO e", EmpleadoEntity.class).getResultList();
         List<PagoEntity> pagoEntities = new ArrayList<>();
 
-        Calendar c = Calendar.getInstance();
-        c.set(Calendar.HOUR, 0);
-        c.set(Calendar.MINUTE, 0);
-        c.set(Calendar.SECOND, 0);
-
 
         for (EmpleadoEntity empleadoEntity : empleadosEntity) {
+            Calendar c = Calendar.getInstance();
+            c.set(Calendar.HOUR, 0);
+            c.set(Calendar.MINUTE, 0);
+            c.set(Calendar.SECOND, 0);
             if (empleadoEntity.getCargo() != null) {
                 if (empleadoEntity.getCargo().equals("OPERARIO")) {
                     PagoEntity pagoEntity = new PagoEntity();
